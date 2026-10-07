@@ -1,0 +1,24 @@
+:root {
+  /* Cores principais */
+  --color-primary-dark: #014265;
+  --color-primary: #02527F;
+  --color-primary-light: #76BCD8;
+
+  /* Cores de sustentabilidade */
+  --color-secondary-dark: #065A5B;
+  --color-secondary: #0CBEC1;
+
+  /* Cores neutras */
+  --color-white: #FFFFFF;
+  --color-background: #F5F8FA;
+  --color-text: #16323F;
+  --color-text-secondary: #64748B;
+
+  /* Bordas */
+  --color-border: #DCE8ED;
+
+  /* Estados */
+  --color-success: #2E8B57;
+  --color-warning: #E9A23B;
+  --color-error: #D9534F;
+}
