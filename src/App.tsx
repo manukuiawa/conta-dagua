@@ -1,7 +1,7 @@
-import Splash from './pages/Splash/Splash'
+import Login from './pages/Login/Login'
 
 function App() {
-  return <Splash />
+  return <Login />
 }
 
 export default App
