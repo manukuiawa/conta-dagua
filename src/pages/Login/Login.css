@@ -101,8 +101,7 @@
 
 .form-group input:focus {
   border-bottom-color: var(--color-secondary);
-  box-shadow:
-    0 2px 0 var(--color-secondary);
+  box-shadow: 0 2px 0 var(--color-secondary);
 }
 
 .form-group input:focus::placeholder {
@@ -138,6 +137,8 @@
 }
 
 .forgot-password {
+  display: inline-block;
+  text-decoration: none;
   align-self: flex-end;
   margin-top: -12px;
   padding: 0;
@@ -171,8 +172,7 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow:
-    0 8px 22px rgba(12, 190, 193, 0.2);
+  box-shadow: 0 8px 22px rgba(12, 190, 193, 0.2);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -182,14 +182,12 @@
 .login-button:hover {
   background: #25d2d4;
   transform: translateY(-2px);
-  box-shadow:
-    0 12px 28px rgba(12, 190, 193, 0.3);
+  box-shadow: 0 12px 28px rgba(12, 190, 193, 0.3);
 }
 
 .login-button:active {
   transform: translateY(0);
-  box-shadow:
-    0 6px 14px rgba(12, 190, 193, 0.2);
+  box-shadow: 0 6px 14px rgba(12, 190, 193, 0.2);
 }
 
 .login-register {

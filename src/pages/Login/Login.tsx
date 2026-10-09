@@ -59,9 +59,9 @@ function Login() {
             </div>
           </div>
 
-          <button type="button" className="forgot-password">
+          <Link to="/recuperar-senha" className="forgot-password">
             Esqueci minha senha
-          </button>
+          </Link>
 
           <button type="submit" className="login-button">
             Entrar
