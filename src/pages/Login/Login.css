@@ -209,6 +209,8 @@
 }
 
 .register-button {
+  display: inline-block;
+  text-decoration: none;
   padding: 0;
   border: none;
   background: transparent;
