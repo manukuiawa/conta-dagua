@@ -1,0 +1,242 @@
+.questionnaire-page {
+  min-height: 100vh;
+  padding: 48px 24px;
+  display: flex;
+  justify-content: center;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--secondary-font);
+}
+
+.questionnaire-content {
+  width: 100%;
+  max-width: 680px;
+  margin: auto;
+  animation: questionnaireAppear 0.5s ease-out;
+}
+
+.questionnaire-header h1 {
+  margin: 12px 0;
+  color: var(--color-primary-dark);
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+
+.questionnaire-header > p {
+  max-width: 540px;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.questionnaire-progress {
+  margin: 32px 0;
+}
+
+.questionnaire-progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.questionnaire-progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #dce8ed;
+}
+
+.questionnaire-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
+  transition: width 0.3s ease;
+}
+
+.questionnaire-form {
+  padding: 30px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-white);
+  box-shadow: 0 12px 40px rgba(1, 66, 101, 0.06);
+}
+
+.questionnaire-step h2 {
+  margin: 0;
+  color: var(--color-primary-dark);
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.questionnaire-step-description {
+  margin: 8px 0 28px;
+  color: var(--color-text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.question-group {
+  min-width: 0;
+  margin: 0 0 28px;
+  padding: 0;
+  border: none;
+}
+
+.question-group legend {
+  width: 100%;
+  margin-bottom: 14px;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.question-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-white);
+  color: var(--color-text);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.question-option:hover {
+  border-color: var(--color-primary-light);
+  background: #f5fbfd;
+}
+
+.question-option:has(input:checked) {
+  border-color: var(--color-primary);
+  background: #eef9fc;
+}
+
+.question-option input {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.questionnaire-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.questionnaire-back,
+.questionnaire-next {
+  min-height: 46px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-family: var(--secondary-font);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.questionnaire-back {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-primary);
+}
+
+.questionnaire-back:hover {
+  background: #f1f7f9;
+}
+
+.questionnaire-next {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.questionnaire-next:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.questionnaire-error {
+  margin: -8px 0 18px;
+  color: var(--color-error);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.questionnaire-privacy {
+  margin: 20px auto 0;
+  color: var(--color-text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+@keyframes questionnaireAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 520px) {
+  .questionnaire-page {
+    padding: 32px 16px;
+  }
+
+  .questionnaire-form {
+    padding: 22px 18px;
+    border-radius: 16px;
+  }
+
+  .questionnaire-progress {
+    margin: 26px 0;
+  }
+
+  .questionnaire-actions {
+    flex-direction: column-reverse;
+  }
+
+  .questionnaire-back,
+  .questionnaire-next {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .questionnaire-content,
+  .questionnaire-progress-fill,
+  .question-option,
+  .questionnaire-back,
+  .questionnaire-next {
+    animation: none;
+    transition: none;
+  }
+}
