@@ -1,7 +1,7 @@
-import Login from './pages/Login/Login'
+import Register from './Register/Register'
 
 function App() {
-  return <Login />
+  return <Register />
 }
 
 export default App

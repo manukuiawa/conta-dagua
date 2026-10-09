@@ -1,0 +1,233 @@
+.register {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(118, 188, 216, 0.22),
+      transparent 32%
+    ),
+    linear-gradient(
+      145deg,
+      var(--color-primary-dark) 0%,
+      var(--color-primary) 55%,
+      #065a6b 100%
+    );
+
+  font-family: var(--secondary-font);
+}
+
+.register-content {
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  animation: registerAppear 0.8s ease-out;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.register-header h1 {
+  margin: 0;
+  color: var(--color-white);
+  font-family: var(--primary-font);
+  font-size: 3.8rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.register-header p {
+  margin: 14px 0 0;
+  color: #dff6fc;
+  font-family: var(--secondary-font);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.register-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.register-form-group label {
+  color: #dff6fc;
+  font-family: var(--secondary-font);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.register-form-group input {
+  width: 100%;
+  padding: 10px 4px;
+  border: none;
+  border-bottom: 2px solid rgba(118, 188, 216, 0.65);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-white);
+  font-family: var(--secondary-font);
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.register-form-group input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+  font-family: var(--secondary-font);
+}
+
+.register-form-group input:focus {
+  border-bottom-color: var(--color-secondary);
+  box-shadow: 0 2px 0 var(--color-secondary);
+}
+
+.register-password-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.register-password-wrapper input {
+  padding-right: 75px;
+}
+
+.register-password-toggle {
+  position: absolute;
+  right: 4px;
+  bottom: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--secondary-font);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.register-password-toggle:hover {
+  color: var(--color-white);
+}
+
+.register-error {
+  margin: -6px 0 0;
+  color: #ffd0d0;
+  font-family: var(--secondary-font);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.register-submit {
+  width: 100%;
+  margin-top: 6px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--color-secondary);
+  color: #070535;
+  font-family: var(--secondary-font);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(12, 190, 193, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.register-submit:hover {
+  background: #25d2d4;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(12, 190, 193, 0.3);
+}
+
+.register-submit:active {
+  transform: translateY(0);
+}
+
+.register-footer {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(118, 188, 216, 0.3);
+  text-align: center;
+}
+
+.register-footer p {
+  margin: 0 0 9px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: var(--secondary-font);
+  font-size: 0.78rem;
+}
+
+.register-login-link {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-secondary);
+  font-family: var(--secondary-font);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.register-login-link:hover {
+  color: var(--color-white);
+}
+
+@keyframes registerAppear {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .register {
+    padding: 32px 24px;
+  }
+
+  .register-header {
+    margin-bottom: 30px;
+  }
+
+  .register-header h1 {
+    font-size: 3.3rem;
+  }
+
+  .register-header p {
+    font-size: 0.85rem;
+  }
+
+  .register-form {
+    gap: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .register-content,
+  .register-submit {
+    animation: none;
+    transition: none;
+  }
+}
