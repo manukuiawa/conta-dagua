@@ -184,6 +184,10 @@
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
+  .register-login-link {
+    display: inline-block;
+    text-decoration: none;
+  }
 }
 
 .register-login-link:hover {

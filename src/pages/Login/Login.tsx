@@ -1,16 +1,15 @@
-import { useState } from 'react'
-import './Login.css'
-import { Link } from 'react-router-dom'
+import { useState } from "react";
+import "./Login.css";
+import { Link } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <main className="login">
       <section className="login-card">
-
         <div className="login-header">
           <h1>Conta D’Água</h1>
 
@@ -21,8 +20,10 @@ function Login() {
           </p>
         </div>
 
-        <form className="login-form">
-
+        <form
+          className="login-form"
+          onSubmit={(event) => event.preventDefault()}
+        >
           <div className="form-group">
             <label htmlFor="email">E-mail</label>
 
@@ -39,10 +40,9 @@ function Login() {
             <label htmlFor="password">Senha</label>
 
             <div className="password-wrapper">
-
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Digite sua senha"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -52,32 +52,20 @@ function Login() {
                 type="button"
                 className="password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={
-                  showPassword
-                    ? 'Ocultar senha'
-                    : 'Mostrar senha'
-                }
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                {showPassword ? 'Ocultar' : 'Mostrar'}
+                {showPassword ? "Ocultar" : "Mostrar"}
               </button>
-
             </div>
           </div>
 
-          <button
-            type="button"
-            className="forgot-password"
-          >
+          <button type="button" className="forgot-password">
             Esqueci minha senha
           </button>
 
-          <button
-            type="submit"
-            className="login-button"
-          >
+          <button type="submit" className="login-button">
             Entrar
           </button>
-
         </form>
 
         <div className="login-register">
@@ -86,10 +74,9 @@ function Login() {
             Criar minha conta
           </Link>
         </div>
-
       </section>
     </main>
-  )
+  );
 }
 
-export default Login
+export default Login;

@@ -1,31 +1,33 @@
-
-import { useState } from 'react'
-import './Register.css'
+import { useState } from "react";
+import "./Register.css";
+import { Link } from "react-router-dom";
 
 function Register() {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState("");
 
   function handleRegister(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     if (password.length < 8) {
-      setError('A senha deve ter pelo menos 8 caracteres.')
-      return
+      setError("A senha deve ter pelo menos 8 caracteres.");
+      return;
     }
 
     if (password !== confirmPassword) {
-      setError('As senhas não coincidem.')
-      return
+      setError("As senhas não coincidem.");
+      return;
     }
 
-    setError('')
-    alert('Cadastro validado! A criação real da conta será implementada depois.')
+    setError("");
+    alert(
+      "Cadastro validado! A criação real da conta será implementada depois.",
+    );
   }
 
   return (
@@ -76,7 +78,7 @@ function Register() {
             <div className="register-password-wrapper">
               <input
                 id="register-password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Mínimo de 8 caracteres"
                 autoComplete="new-password"
                 value={password}
@@ -89,22 +91,20 @@ function Register() {
                 type="button"
                 className="register-password-toggle"
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               >
-                {showPassword ? 'Ocultar' : 'Mostrar'}
+                {showPassword ? "Ocultar" : "Mostrar"}
               </button>
             </div>
           </div>
 
           <div className="register-form-group">
-            <label htmlFor="register-confirm-password">
-              Confirmar senha
-            </label>
+            <label htmlFor="register-confirm-password">Confirmar senha</label>
 
             <div className="register-password-wrapper">
               <input
                 id="register-confirm-password"
-                type={showConfirmPassword ? 'text' : 'password'}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="Digite a senha novamente"
                 autoComplete="new-password"
                 value={confirmPassword}
@@ -115,16 +115,14 @@ function Register() {
               <button
                 type="button"
                 className="register-password-toggle"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 aria-label={
                   showConfirmPassword
-                    ? 'Ocultar confirmação de senha'
-                    : 'Mostrar confirmação de senha'
+                    ? "Ocultar confirmação de senha"
+                    : "Mostrar confirmação de senha"
                 }
               >
-                {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                {showConfirmPassword ? "Ocultar" : "Mostrar"}
               </button>
             </div>
           </div>
@@ -143,17 +141,13 @@ function Register() {
         <footer className="register-footer">
           <p>Já possui uma conta?</p>
 
-          <button
-            type="button"
-            className="register-login-link"
-            onClick={() => window.location.assign('/')}
-          >
+          <Link to="/login" className="register-login-link">
             Voltar para o login
-          </button>
+          </Link>
         </footer>
       </section>
     </main>
-  )
+  );
 }
 
-export default Register
+export default Register;
