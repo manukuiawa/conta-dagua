@@ -1,316 +1,352 @@
-import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import './Questionnaire.css'
+
+import { useState, type FormEvent } from "react";
+import { Link, useLocation } from "react-router-dom";
+import "./Questionnaire.css";
 
 type Answers = {
-  residents: string
-  billTracking: string
-  billType: string
-  showerFrequency: string
-  showerDuration: string
-  showerOff: string
-  dishwashing: string
-  brushingTeeth: string
-  reuseWater: string
-  laundryFrequency: string
-  machineLoad: string
-  laundryReuse: string
-  toiletType: string
-  leakDetected: string
-  leakChecking: string
-  biggestChallenge: string
-}
+  residents: string;
+  billTracking: string;
+  billType: string;
+  showerFrequency: string;
+  showerDuration: string;
+  showerOff: string;
+  dishwashing: string;
+  brushingTeeth: string;
+  reuseWater: string;
+  laundryFrequency: string;
+  machineLoad: string;
+  laundryReuse: string;
+  toiletType: string;
+  leakDetected: string;
+  leakChecking: string;
+  biggestChallenge: string;
+};
 
 type Question = {
-  id: keyof Answers
-  title: string
-  options: { value: string; label: string }[]
-}
+  id: keyof Answers;
+  title: string;
+  options: { value: string; label: string }[];
+};
 
 type QuestionStep = {
-  title: string
-  description: string
-  questions: Question[]
-}
+  title: string;
+  description: string;
+  questions: Question[];
+};
 
 const initialAnswers: Answers = {
-  residents: '',
-  billTracking: '',
-  billType: '',
-  showerFrequency: '',
-  showerDuration: '',
-  showerOff: '',
-  dishwashing: '',
-  brushingTeeth: '',
-  reuseWater: '',
-  laundryFrequency: '',
-  machineLoad: '',
-  laundryReuse: '',
-  toiletType: '',
-  leakDetected: '',
-  leakChecking: '',
-  biggestChallenge: '',
-}
+  residents: "",
+  billTracking: "",
+  billType: "",
+  showerFrequency: "",
+  showerDuration: "",
+  showerOff: "",
+  dishwashing: "",
+  brushingTeeth: "",
+  reuseWater: "",
+  laundryFrequency: "",
+  machineLoad: "",
+  laundryReuse: "",
+  toiletType: "",
+  leakDetected: "",
+  leakChecking: "",
+  biggestChallenge: "",
+};
 
 const steps: QuestionStep[] = [
   {
-    title: 'Perfil da residência',
-    description: 'Vamos conhecer um pouco da sua realidade.',
+    title: "Perfil da residência",
+    description: "Vamos conhecer um pouco da sua realidade.",
     questions: [
       {
-        id: 'residents',
-        title: 'Quantas pessoas moram na sua residência, incluindo você?',
+        id: "residents",
+        title: "Quantas pessoas moram na sua residência, incluindo você?",
         options: [
-          { value: '1', label: '1 pessoa' },
-          { value: '2', label: '2 pessoas' },
-          { value: '3-4', label: '3 a 4 pessoas' },
-          { value: '5+', label: '5 pessoas ou mais' },
+          { value: "1", label: "1 pessoa" },
+          { value: "2", label: "2 pessoas" },
+          { value: "3-4", label: "3 a 4 pessoas" },
+          { value: "5+", label: "5 pessoas ou mais" },
         ],
       },
       {
-        id: 'billTracking',
-        title: 'Você costuma acompanhar o valor da conta de água?',
+        id: "billTracking",
+        title: "Você costuma acompanhar o valor da conta de água?",
         options: [
-          { value: 'always', label: 'Sempre' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'never', label: 'Nunca' },
-          { value: 'unknown', label: 'Não tenho acesso a essa informação' },
+          { value: "always", label: "Sempre" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "never", label: "Nunca" },
+          {
+            value: "unknown",
+            label: "Não tenho acesso a essa informação",
+          },
         ],
       },
       {
-        id: 'billType',
-        title: 'Como funciona a cobrança da água onde você mora?',
+        id: "billType",
+        title: "Como funciona a cobrança da água onde você mora?",
         options: [
-          { value: 'individual', label: 'Individual por residência' },
-          { value: 'shared', label: 'Compartilhada entre moradores' },
-          { value: 'included', label: 'Incluída na taxa do condomínio' },
-          { value: 'unknown', label: 'Não sei informar' },
+          { value: "individual", label: "Individual por residência" },
+          { value: "shared", label: "Compartilhada entre moradores" },
+          { value: "included", label: "Incluída na taxa do condomínio" },
+          { value: "unknown", label: "Não sei informar" },
         ],
       },
     ],
   },
   {
-    title: 'Banho',
-    description: 'O banho é um dos hábitos que podemos avaliar.',
+    title: "Banho",
+    description: "O banho é um dos hábitos que podemos avaliar.",
     questions: [
       {
-        id: 'showerFrequency',
-        title: 'Quantos banhos você costuma tomar por dia?',
+        id: "showerFrequency",
+        title: "Quantos banhos você costuma tomar por dia?",
         options: [
-          { value: '0-1', label: 'Até 1 banho' },
-          { value: '2', label: '2 banhos' },
-          { value: '3+', label: '3 ou mais banhos' },
-          { value: 'varies', label: 'Varia bastante' },
+          { value: "0-1", label: "Até 1 banho" },
+          { value: "2", label: "2 banhos" },
+          { value: "3+", label: "3 ou mais banhos" },
+          { value: "varies", label: "Varia bastante" },
         ],
       },
       {
-        id: 'showerDuration',
-        title: 'Quanto tempo dura seu banho, em média?',
+        id: "showerDuration",
+        title: "Quanto tempo dura seu banho, em média?",
         options: [
-          { value: 'under5', label: 'Até 5 minutos' },
-          { value: '5-10', label: 'De 5 a 10 minutos' },
-          { value: '10-15', label: 'De 10 a 15 minutos' },
-          { value: 'over15', label: 'Mais de 15 minutos' },
+          { value: "under5", label: "Até 5 minutos" },
+          { value: "5-10", label: "De 5 a 10 minutos" },
+          { value: "10-15", label: "De 10 a 15 minutos" },
+          { value: "over15", label: "Mais de 15 minutos" },
         ],
       },
       {
-        id: 'showerOff',
-        title: 'Você fecha o chuveiro enquanto se ensaboa?',
+        id: "showerOff",
+        title: "Você fecha o chuveiro enquanto se ensaboa?",
         options: [
-          { value: 'always', label: 'Sempre' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'never', label: 'Nunca' },
-          { value: 'not_applicable', label: 'Não costumo fazer isso' },
+          { value: "always", label: "Sempre" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "never", label: "Nunca" },
         ],
       },
     ],
   },
   {
-    title: 'Cozinha e torneiras',
-    description: 'Agora, vamos observar hábitos da rotina diária.',
+    title: "Cozinha e torneiras",
+    description: "Agora, vamos observar hábitos da rotina diária.",
     questions: [
       {
-        id: 'dishwashing',
-        title: 'Como você costuma lavar a louça?',
+        id: "dishwashing",
+        title: "Como você costuma lavar a louça?",
         options: [
-          { value: 'tap_on', label: 'Com a torneira aberta durante a lavagem' },
-          { value: 'close_tap', label: 'Fecho a torneira enquanto ensaboo' },
-          { value: 'basin', label: 'Uso uma bacia ou recipiente' },
-          { value: 'dishwasher', label: 'Utilizo lava-louças' },
+          {
+            value: "tap_on",
+            label: "Com a torneira aberta durante a lavagem",
+          },
+          {
+            value: "close_tap",
+            label: "Fecho a torneira enquanto ensaboo",
+          },
+          { value: "basin", label: "Uso uma bacia ou recipiente" },
+          { value: "dishwasher", label: "Utilizo lava-louças" },
         ],
       },
       {
-        id: 'brushingTeeth',
-        title: 'Você fecha a torneira ao escovar os dentes?',
+        id: "brushingTeeth",
+        title: "Você fecha a torneira ao escovar os dentes?",
         options: [
-          { value: 'always', label: 'Sempre' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'never', label: 'Nunca' },
+          { value: "always", label: "Sempre" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "never", label: "Nunca" },
         ],
       },
       {
-        id: 'reuseWater',
-        title: 'Você reaproveita água em alguma atividade doméstica?',
+        id: "reuseWater",
+        title: "Você reaproveita água em alguma atividade doméstica?",
         options: [
-          { value: 'often', label: 'Sim, frequentemente' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'no', label: 'Não costumo reaproveitar' },
-          { value: 'no_opportunity', label: 'Não sei como fazer isso com segurança' },
+          { value: "often", label: "Sim, frequentemente" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "no", label: "Não costumo reaproveitar" },
+          {
+            value: "no_opportunity",
+            label: "Não sei como fazer isso com segurança",
+          },
         ],
       },
     ],
   },
   {
-    title: 'Lavanderia',
-    description: 'Vamos entender a frequência e o uso da máquina de lavar.',
+    title: "Lavanderia",
+    description: "Vamos entender a frequência e o uso da máquina de lavar.",
     questions: [
       {
-        id: 'laundryFrequency',
-        title: 'Com que frequência você lava roupas?',
+        id: "laundryFrequency",
+        title: "Com que frequência você lava roupas?",
         options: [
-          { value: 'daily', label: 'Todos os dias' },
-          { value: '2-3', label: '2 a 3 vezes por semana' },
-          { value: 'weekly', label: 'Uma vez por semana' },
-          { value: 'less', label: 'Menos de uma vez por semana' },
+          { value: "daily", label: "Todos os dias" },
+          { value: "2-3", label: "2 a 3 vezes por semana" },
+          { value: "weekly", label: "Uma vez por semana" },
+          { value: "less", label: "Menos de uma vez por semana" },
         ],
       },
       {
-        id: 'machineLoad',
-        title: 'Quando usa a máquina, ela costuma estar cheia?',
+        id: "machineLoad",
+        title: "Quando usa a máquina, ela costuma estar cheia?",
         options: [
-          { value: 'always', label: 'Sim, geralmente espero encher' },
-          { value: 'sometimes', label: 'Depende da quantidade de roupas' },
-          { value: 'small', label: 'Costumo lavar poucas peças' },
-          { value: 'no_machine', label: 'Não tenho máquina de lavar' },
+          { value: "always", label: "Sim, geralmente espero encher" },
+          {
+            value: "sometimes",
+            label: "Depende da quantidade de roupas",
+          },
+          { value: "small", label: "Costumo lavar poucas peças" },
+          { value: "no_machine", label: "Não tenho máquina de lavar" },
         ],
       },
       {
-        id: 'laundryReuse',
-        title: 'Você reaproveita a água da máquina de lavar?',
+        id: "laundryReuse",
+        title: "Você reaproveita a água da máquina de lavar?",
         options: [
-          { value: 'often', label: 'Sim, frequentemente' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'no', label: 'Não' },
-          { value: 'no_machine', label: 'Não tenho máquina de lavar' },
+          { value: "often", label: "Sim, frequentemente" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "no", label: "Não" },
+          { value: "no_machine", label: "Não tenho máquina de lavar" },
         ],
       },
     ],
   },
   {
-    title: 'Banheiro e pontos de atenção',
-    description: 'Por fim, vamos identificar possíveis oportunidades de economia.',
+    title: "Banheiro e pontos de atenção",
+    description:
+      "Por fim, vamos identificar possíveis oportunidades de economia.",
     questions: [
       {
-        id: 'toiletType',
-        title: 'Sua descarga possui dois botões ou acionamento econômico?',
+        id: "toiletType",
+        title: "Sua descarga possui dois botões ou acionamento econômico?",
         options: [
-          { value: 'yes', label: 'Sim' },
-          { value: 'no', label: 'Não' },
-          { value: 'unknown', label: 'Não sei informar' },
+          { value: "yes", label: "Sim" },
+          { value: "no", label: "Não" },
+          { value: "unknown", label: "Não sei informar" },
         ],
       },
       {
-        id: 'leakDetected',
-        title: 'Você já percebeu vazamentos na sua residência?',
+        id: "leakDetected",
+        title: "Você já percebeu vazamentos na sua residência?",
         options: [
-          { value: 'current', label: 'Sim, existe um possível vazamento atualmente' },
-          { value: 'past', label: 'Já aconteceu, mas foi resolvido' },
-          { value: 'no', label: 'Não percebi vazamentos' },
-          { value: 'unknown', label: 'Não tenho certeza' },
+          {
+            value: "current",
+            label: "Sim, existe um possível vazamento atualmente",
+          },
+          { value: "past", label: "Já aconteceu, mas foi resolvido" },
+          { value: "no", label: "Não percebi vazamentos" },
+          { value: "unknown", label: "Não tenho certeza" },
         ],
       },
       {
-        id: 'leakChecking',
-        title: 'Com que frequência você verifica torneiras e descargas?',
+        id: "leakChecking",
+        title: "Com que frequência você verifica torneiras e descargas?",
         options: [
-          { value: 'often', label: 'Frequentemente' },
-          { value: 'sometimes', label: 'Às vezes' },
-          { value: 'rarely', label: 'Raramente' },
-          { value: 'never', label: 'Nunca' },
+          { value: "often", label: "Frequentemente" },
+          { value: "sometimes", label: "Às vezes" },
+          { value: "rarely", label: "Raramente" },
+          { value: "never", label: "Nunca" },
         ],
       },
       {
-        id: 'biggestChallenge',
-        title: 'Qual é sua principal dificuldade para economizar água?',
+        id: "biggestChallenge",
+        title: "Qual é sua principal dificuldade para economizar água?",
         options: [
-          { value: 'cost', label: 'Não conheço o impacto dos meus hábitos' },
-          { value: 'routine', label: 'É difícil mudar minha rotina' },
-          { value: 'shared_bill', label: 'A conta é compartilhada no condomínio' },
-          { value: 'leaks', label: 'Tenho dificuldade para identificar vazamentos' },
-          { value: 'other', label: 'Outra dificuldade ou nenhuma em especial' },
+          {
+            value: "cost",
+            label: "Não conheço o impacto dos meus hábitos",
+          },
+          { value: "routine", label: "É difícil mudar minha rotina" },
+          {
+            value: "shared_bill",
+            label: "A conta é compartilhada no condomínio",
+          },
+          {
+            value: "leaks",
+            label: "Tenho dificuldade para identificar vazamentos",
+          },
+          {
+            value: "other",
+            label: "Outra dificuldade ou nenhuma em especial",
+          },
         ],
       },
     ],
   },
-]
+];
 
 function Questionnaire() {
-  const [step, setStep] = useState(0)
-  const [answers, setAnswers] = useState<Answers>(initialAnswers)
-  const [error, setError] = useState('')
-  const [completed, setCompleted] = useState(false)
+  const location = useLocation();
+
+  const userName =
+    typeof location.state?.name === "string" &&
+    location.state.name.trim() !== ""
+      ? location.state.name.trim().split(/\s+/)[0]
+      : "Vamos juntos";
+
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<Answers>(initialAnswers);
+  const [error, setError] = useState("");
+  const [completed, setCompleted] = useState(false);
 
   const totalQuestions = steps.reduce(
     (total, current) => total + current.questions.length,
     0,
-  )
+  );
 
   const answeredCount = Object.values(answers).filter(
-    (answer) => answer !== '',
-  ).length
+    (answer) => answer !== "",
+  ).length;
 
-  const progress = Math.round((answeredCount / totalQuestions) * 100)
-  const currentStep = steps[step]
+  const progress = Math.round((answeredCount / totalQuestions) * 100);
+  const currentStep = steps[step];
 
   function updateAnswer(id: keyof Answers, value: string) {
-    setAnswers((current) => ({ ...current, [id]: value }))
-    setError('')
+    setAnswers((current) => ({ ...current, [id]: value }));
+    setError("");
   }
 
   function handleNext(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     const unanswered = currentStep.questions.some(
       (question) => !answers[question.id],
-    )
+    );
 
     if (unanswered) {
-      setError('Responda a todas as perguntas desta etapa para continuar.')
-      return
+      setError("Responda a todas as perguntas desta etapa para continuar.");
+      return;
     }
 
     if (step < steps.length - 1) {
-      setStep((current) => current + 1)
-      setError('')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-      return
+      setStep((current) => current + 1);
+      setError("");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
     }
 
-    setCompleted(true)
+    setCompleted(true);
 
-    // Temporário: as respostas ainda não são enviadas a um servidor.
-    console.log('Respostas do Conta D’Água:', answers)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Temporário: as respostas ainda não são salvas em um servidor.
+    console.log("Respostas do Conta D’Água:", answers);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function handleBack() {
-    if (completed) {
-      setCompleted(false)
-      return
-    }
-
     if (step > 0) {
-      setStep((current) => current - 1)
-      setError('')
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      setStep((current) => current - 1);
+      setError("");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }
 
   function restartQuestionnaire() {
-    setAnswers(initialAnswers)
-    setStep(0)
-    setCompleted(false)
-    setError('')
+    setAnswers(initialAnswers);
+    setStep(0);
+    setCompleted(false);
+    setError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (completed) {
@@ -323,17 +359,18 @@ function Questionnaire() {
 
           <span className="questionnaire-eyebrow">CONTA D’ÁGUA</span>
 
-          <h1>Obrigado por participar!</h1>
+          <h1>Obrigado por participar, {userName}!</h1>
 
           <p className="questionnaire-result-description">
-            Suas respostas foram preenchidas. Elas poderão ajudar a
-            identificar hábitos e oportunidades de economia de água.
+            Suas respostas foram preenchidas. Elas poderão ajudar a identificar
+            hábitos e oportunidades de economia de água.
           </p>
 
           <div className="questionnaire-result-card">
             <span className="questionnaire-result-number">
               {answeredCount} de {totalQuestions}
             </span>
+
             <span>perguntas respondidas</span>
 
             <div className="questionnaire-progress-track">
@@ -355,24 +392,26 @@ function Questionnaire() {
           </button>
 
           <Link to="/login" className="questionnaire-home-link">
-            Fazer o Login
+            Voltar para o login
           </Link>
         </section>
       </main>
-    )
+    );
   }
 
   return (
     <main className="questionnaire-page">
       <section className="questionnaire-content">
         <header className="questionnaire-header">
-          <span className="questionnaire-eyebrow">CONTA D’ÁGUA</span>
+          <p className="questionnaire-greeting">
+            Vamos cuidar da água, {userName}!
+          </p>
 
           <h1>Vamos conhecer seus hábitos?</h1>
 
           <p>
-            Responda às perguntas para identificar oportunidades de
-            usar a água de forma mais consciente.
+            Responda às perguntas para identificar oportunidades de usar a água
+            de forma mais consciente.
           </p>
         </header>
 
@@ -381,6 +420,7 @@ function Questionnaire() {
             <span>
               Etapa {step + 1} de {steps.length}
             </span>
+
             <span>{progress}% respondido</span>
           </div>
 
@@ -420,17 +460,16 @@ function Questionnaire() {
                       .reduce(
                         (total, item) => total + item.questions.length,
                         0,
-                      ) + index + 1}
+                      ) +
+                      index +
+                      1}
                     .
-                  </span>{' '}
+                  </span>{" "}
                   {question.title}
                 </legend>
 
                 {question.options.map((option) => (
-                  <label
-                    className="question-option"
-                    key={option.value}
-                  >
+                  <label className="question-option" key={option.value}>
                     <input
                       type="radio"
                       name={question.id}
@@ -440,6 +479,7 @@ function Questionnaire() {
                         updateAnswer(question.id, option.value)
                       }
                     />
+
                     <span>{option.label}</span>
                   </label>
                 ))}
@@ -470,15 +510,16 @@ function Questionnaire() {
 
             <button type="submit" className="questionnaire-next">
               {step === steps.length - 1
-                ? 'Concluir questionário'
-                : 'Continuar'}
+                ? "Concluir questionário"
+                : "Continuar"}
+
               <span aria-hidden="true"> →</span>
             </button>
           </div>
         </form>
       </section>
     </main>
-  )
+  );
 }
 
-export default Questionnaire
+export default Questionnaire;
