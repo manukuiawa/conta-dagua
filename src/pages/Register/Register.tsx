@@ -1,8 +1,11 @@
+
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
-import { Link } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,9 +28,12 @@ function Register() {
     }
 
     setError("");
-    alert(
-      "Cadastro validado! A criação real da conta será implementada depois.",
-    );
+
+    // Simulação temporária do cadastro.
+    // A criação real da conta será implementada com o backend.
+    navigate("/questionario", {
+      state: { name, email },
+    });
   }
 
   return (
@@ -46,11 +52,10 @@ function Register() {
         <form className="register-form" onSubmit={handleRegister}>
           <div className="register-form-group">
             <label htmlFor="register-name">Nome completo</label>
-
             <input
               id="register-name"
               type="text"
-              placeholder="Nome Completo"
+              placeholder="Nome completo"
               autoComplete="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
@@ -60,7 +65,6 @@ function Register() {
 
           <div className="register-form-group">
             <label htmlFor="register-email">E-mail</label>
-
             <input
               id="register-email"
               type="email"
@@ -99,7 +103,9 @@ function Register() {
           </div>
 
           <div className="register-form-group">
-            <label htmlFor="register-confirm-password">Confirmar senha</label>
+            <label htmlFor="register-confirm-password">
+              Confirmar senha
+            </label>
 
             <div className="register-password-wrapper">
               <input
@@ -115,7 +121,9 @@ function Register() {
               <button
                 type="button"
                 className="register-password-toggle"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
                 aria-label={
                   showConfirmPassword
                     ? "Ocultar confirmação de senha"

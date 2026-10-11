@@ -1,3 +1,4 @@
+
 import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -10,9 +11,10 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Register />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
       <Route path="/recuperar-senha" element={<ForgotPassword />} />
       <Route path="/questionario" element={<Questionnaire />} />
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

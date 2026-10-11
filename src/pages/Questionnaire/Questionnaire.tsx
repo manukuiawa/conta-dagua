@@ -476,12 +476,6 @@ function Questionnaire() {
             </button>
           </div>
         </form>
-
-        <p className="questionnaire-privacy">
-          {answeredCount} de {totalQuestions} respostas preenchidas.
-          Suas respostas serão usadas para análises educativas de hábitos
-          de consumo.
-        </p>
       </section>
     </main>
   )
