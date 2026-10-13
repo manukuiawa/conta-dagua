@@ -1,4 +1,3 @@
-
 import { useState, type FormEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./Questionnaire.css";
@@ -390,9 +389,12 @@ function Questionnaire() {
           >
             Responder novamente
           </button>
-
-          <Link to="/login" className="questionnaire-home-link">
-            Voltar para o login
+          <Link
+            to="/dashboard"
+            state={location.state}
+            className="questionnaire-home-link"
+          >
+            Ir para meu Dashboard →
           </Link>
         </section>
       </main>
@@ -441,9 +443,7 @@ function Questionnaire() {
 
         <form className="questionnaire-form" onSubmit={handleNext}>
           <div className="questionnaire-step" key={step}>
-            <span className="questionnaire-step-number">
-              BLOCO {step + 1}
-            </span>
+            <span className="questionnaire-step-number">BLOCO {step + 1}</span>
 
             <h2>{currentStep.title}</h2>
 
@@ -475,9 +475,7 @@ function Questionnaire() {
                       name={question.id}
                       value={option.value}
                       checked={answers[question.id] === option.value}
-                      onChange={() =>
-                        updateAnswer(question.id, option.value)
-                      }
+                      onChange={() => updateAnswer(question.id, option.value)}
                     />
 
                     <span>{option.label}</span>
