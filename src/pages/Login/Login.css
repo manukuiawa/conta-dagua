@@ -227,6 +227,13 @@
   transform: translateY(-1px);
 }
 
+.login-error {
+  color: #c62828;
+  font-size: 0.875rem;
+  margin: 0;
+  line-height: 1.4;
+}
+
 @keyframes loginAppear {
   from {
     opacity: 0;
