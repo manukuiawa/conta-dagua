@@ -13,9 +13,13 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleRegister(event: React.FormEvent<HTMLFormElement>) {
+  async function handleRegister(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
     event.preventDefault();
+    setError("");
 
     if (password.length < 8) {
       setError("A senha deve ter pelo menos 8 caracteres.");
@@ -27,13 +31,47 @@ function Register() {
       return;
     }
 
-    setError("");
+    try {
+      setIsLoading(true);
 
-    // Simulação temporária do cadastro.
-    // A criação real da conta será implementada com o backend.
-    navigate("/questionario", {
-      state: { name, email },
-    });
+      const response = await fetch(
+        "http://localhost:3001/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(
+          data.message || "Não foi possível criar sua conta."
+        );
+        return;
+      }
+
+      navigate("/questionario", {
+        state: {
+          name: data.user.name,
+          email: data.user.email,
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao realizar cadastro:", error);
+      setError(
+        "Não foi possível conectar ao servidor. Tente novamente."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -141,8 +179,12 @@ function Register() {
             </p>
           )}
 
-          <button type="submit" className="register-submit">
-            Criar minha conta
+          <button
+            type="submit"
+            className="register-submit"
+            disabled={isLoading}
+          >
+            {isLoading ? "Criando conta..." : "Criar minha conta"}
           </button>
         </form>
 
