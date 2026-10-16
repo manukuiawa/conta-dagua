@@ -11,28 +11,23 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleLogin(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
 
     try {
       setIsLoading(true);
 
-      const response = await fetch(
-        "http://localhost:3001/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: email.trim().toLowerCase(),
-            password,
-          }),
-        }
-      );
+      const response = await fetch("http://localhost:3001/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password,
+        }),
+      });
 
       const data = await response.json();
 
@@ -46,19 +41,46 @@ function Login() {
         return;
       }
 
-      // Armazena o token para as próximas requisições autenticadas.
       sessionStorage.setItem("authToken", data.token);
 
-      navigate("/questionario", {
-        state: {
-          name: data.user.name,
-          email: data.user.email,
+      // Verifica se o usuário já concluiu o questionário
+      const questionnaireResponse = await fetch(
+        "http://localhost:3001/api/questionnaires",
+        {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+            "Cache-Control": "no-cache",
+          },
         },
-      });
+      );
+
+      if (questionnaireResponse.ok) {
+        navigate("/dashboard", { replace: true });
+        return;
+      }
+
+      if (questionnaireResponse.status === 404) {
+        navigate("/questionario", {
+          replace: true,
+          state: {
+            name: data.user.name,
+            email: data.user.email,
+          },
+        });
+        return;
+      }
+
+      // Se a API falhar, não presumimos que o usuário
+      // precisa responder o questionário novamente.
+      setError(
+        "Login realizado, mas não foi possível verificar seu questionário. Tente novamente.",
+      );
     } catch (error) {
       console.error("Erro ao realizar login:", error);
       setError(
-        "Não foi possível conectar ao servidor. Tente novamente."
+        "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
       );
     } finally {
       setIsLoading(false);
@@ -128,11 +150,7 @@ function Login() {
             </p>
           )}
 
-          <button
-            type="submit"
-            className="login-button"
-            disabled={isLoading}
-          >
+          <button type="submit" className="login-button" disabled={isLoading}>
             {isLoading ? "Entrando..." : "Entrar"}
           </button>
         </form>
