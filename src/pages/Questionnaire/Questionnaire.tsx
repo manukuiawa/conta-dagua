@@ -1,5 +1,6 @@
+
 import { useState, type FormEvent } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Questionnaire.css";
 
 type Answers = {
@@ -74,10 +75,7 @@ const steps: QuestionStep[] = [
           { value: "always", label: "Sempre" },
           { value: "sometimes", label: "Às vezes" },
           { value: "never", label: "Nunca" },
-          {
-            value: "unknown",
-            label: "Não tenho acesso a essa informação",
-          },
+          { value: "unknown", label: "Não tenho acesso a essa informação" },
         ],
       },
       {
@@ -135,14 +133,8 @@ const steps: QuestionStep[] = [
         id: "dishwashing",
         title: "Como você costuma lavar a louça?",
         options: [
-          {
-            value: "tap_on",
-            label: "Com a torneira aberta durante a lavagem",
-          },
-          {
-            value: "close_tap",
-            label: "Fecho a torneira enquanto ensaboo",
-          },
+          { value: "tap_on", label: "Com a torneira aberta durante a lavagem" },
+          { value: "close_tap", label: "Fecho a torneira enquanto ensaboo" },
           { value: "basin", label: "Uso uma bacia ou recipiente" },
           { value: "dishwasher", label: "Utilizo lava-louças" },
         ],
@@ -190,10 +182,7 @@ const steps: QuestionStep[] = [
         title: "Quando usa a máquina, ela costuma estar cheia?",
         options: [
           { value: "always", label: "Sim, geralmente espero encher" },
-          {
-            value: "sometimes",
-            label: "Depende da quantidade de roupas",
-          },
+          { value: "sometimes", label: "Depende da quantidade de roupas" },
           { value: "small", label: "Costumo lavar poucas peças" },
           { value: "no_machine", label: "Não tenho máquina de lavar" },
         ],
@@ -251,10 +240,7 @@ const steps: QuestionStep[] = [
         id: "biggestChallenge",
         title: "Qual é sua principal dificuldade para economizar água?",
         options: [
-          {
-            value: "cost",
-            label: "Não conheço o impacto dos meus hábitos",
-          },
+          { value: "cost", label: "Não conheço o impacto dos meus hábitos" },
           { value: "routine", label: "É difícil mudar minha rotina" },
           {
             value: "shared_bill",
@@ -276,6 +262,7 @@ const steps: QuestionStep[] = [
 
 function Questionnaire() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const userName =
     typeof location.state?.name === "string" &&
@@ -287,6 +274,7 @@ function Questionnaire() {
   const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [error, setError] = useState("");
   const [completed, setCompleted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const totalQuestions = steps.reduce(
     (total, current) => total + current.questions.length,
@@ -305,8 +293,10 @@ function Questionnaire() {
     setError("");
   }
 
-  function handleNext(event: FormEvent<HTMLFormElement>) {
+  async function handleNext(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (isSaving) return;
 
     const unanswered = currentStep.questions.some(
       (question) => !answers[question.id],
@@ -324,28 +314,59 @@ function Questionnaire() {
       return;
     }
 
-    setCompleted(true);
+    const token = sessionStorage.getItem("authToken");
 
-    // Temporário: as respostas ainda não são salvas em um servidor.
-    console.log("Respostas do Conta D’Água:", answers);
+    if (!token) {
+      setError("Sua sessão não foi encontrada. Entre novamente para continuar.");
+      return;
+    }
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch("http://localhost:3001/api/questionnaires", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(answers),
+      });
+
+      const data = await response.json().catch(() => null);
+
+      if (response.status === 401) {
+        sessionStorage.removeItem("authToken");
+        setError("Sua sessão expirou. Entre novamente para continuar.");
+        return;
+      }
+
+      if (!response.ok) {
+        setError(
+          data?.message ||
+            "Não foi possível salvar suas respostas. Tente novamente.",
+        );
+        return;
+      }
+
+      setCompleted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch {
+      setError(
+        "Não foi possível conectar ao servidor. Verifique se o backend está rodando.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   function handleBack() {
-    if (step > 0) {
+    if (step > 0 && !isSaving) {
       setStep((current) => current - 1);
       setError("");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }
-
-  function restartQuestionnaire() {
-    setAnswers(initialAnswers);
-    setStep(0);
-    setCompleted(false);
-    setError("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   if (completed) {
@@ -361,8 +382,8 @@ function Questionnaire() {
           <h1>Obrigado por participar, {userName}!</h1>
 
           <p className="questionnaire-result-description">
-            Suas respostas foram preenchidas. Elas poderão ajudar a identificar
-            hábitos e oportunidades de economia de água.
+            Suas respostas foram salvas com sucesso. Agora podemos utilizá-las
+            para identificar hábitos e oportunidades de economia de água.
           </p>
 
           <div className="questionnaire-result-card">
@@ -385,17 +406,10 @@ function Questionnaire() {
           <button
             type="button"
             className="questionnaire-next questionnaire-result-button"
-            onClick={restartQuestionnaire}
-          >
-            Responder novamente
-          </button>
-          <Link
-            to="/dashboard"
-            state={location.state}
-            className="questionnaire-home-link"
+            onClick={() => navigate("/dashboard", { replace: true })}
           >
             Ir para meu Dashboard →
-          </Link>
+          </button>
         </section>
       </main>
     );
@@ -475,6 +489,7 @@ function Questionnaire() {
                       name={question.id}
                       value={option.value}
                       checked={answers[question.id] === option.value}
+                      disabled={isSaving}
                       onChange={() => updateAnswer(question.id, option.value)}
                     />
 
@@ -501,17 +516,24 @@ function Questionnaire() {
                 type="button"
                 className="questionnaire-back"
                 onClick={handleBack}
+                disabled={isSaving}
               >
                 Voltar
               </button>
             )}
 
-            <button type="submit" className="questionnaire-next">
-              {step === steps.length - 1
-                ? "Concluir questionário"
-                : "Continuar"}
+            <button
+              type="submit"
+              className="questionnaire-next"
+              disabled={isSaving}
+            >
+              {isSaving
+                ? "Salvando respostas..."
+                : step === steps.length - 1
+                  ? "Concluir questionário"
+                  : "Continuar"}
 
-              <span aria-hidden="true"> →</span>
+              {!isSaving && <span aria-hidden="true"> →</span>}
             </button>
           </div>
         </form>
