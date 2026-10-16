@@ -3,12 +3,31 @@ const pool = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+function generateToken(userId) {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET não configurado.');
+  }
+
+  return jwt.sign(
+    { sub: String(userId) },
+    process.env.JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+}
+
 async function register(req, res) {
   try {
     const { name, email, password } = req.body;
 
-    // Validar os campos obrigatórios
-    if (!name || !email || !password) {
+    // Validar campos obrigatórios
+    if (
+      typeof name !== 'string' ||
+      typeof email !== 'string' ||
+      typeof password !== 'string' ||
+      !name.trim() ||
+      !email.trim() ||
+      !password
+    ) {
       return res.status(400).json({
         message: 'Nome, e-mail e senha são obrigatórios.',
       });
@@ -17,19 +36,21 @@ async function register(req, res) {
     const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
 
-    if (!normalizedName || !normalizedEmail) {
-      return res.status(400).json({
-        message: 'Preencha um nome e um e-mail válidos.',
-      });
-    }
-
     if (password.length < 8) {
       return res.status(400).json({
         message: 'A senha deve ter pelo menos 8 caracteres.',
       });
     }
 
-    // Verificar se o e-mail já está cadastrado
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET não configurado.');
+
+      return res.status(500).json({
+        message: 'Erro de configuração do servidor.',
+      });
+    }
+
+    // Verificar se o e-mail já existe
     const existingUser = await pool.query(
       'SELECT id FROM users WHERE email = $1',
       [normalizedEmail]
@@ -41,7 +62,7 @@ async function register(req, res) {
       });
     }
 
-    // Nunca salvar a senha original no banco
+    // Armazenar somente o hash da senha
     const passwordHash = await bcrypt.hash(password, 12);
 
     const result = await pool.query(
@@ -51,9 +72,19 @@ async function register(req, res) {
       [normalizedName, normalizedEmail, passwordHash]
     );
 
+    const user = result.rows[0];
+
+    // Autenticar imediatamente o novo usuário
+    const token = generateToken(user.id);
+
     return res.status(201).json({
       message: 'Cadastro realizado com sucesso!',
-      user: result.rows[0],
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (error) {
     if (error.code === '23505') {
@@ -69,7 +100,6 @@ async function register(req, res) {
     });
   }
 }
-
 
 async function login(req, res) {
   try {
@@ -105,7 +135,7 @@ async function login(req, res) {
 
     const user = result.rows[0];
 
-    // A mesma mensagem evita revelar se o e-mail está cadastrado.
+    // Evitar revelar se o e-mail está cadastrado
     if (!user) {
       return res.status(401).json({
         message: 'E-mail ou senha inválidos.',
@@ -123,11 +153,7 @@ async function login(req, res) {
       });
     }
 
-    const token = jwt.sign(
-      { sub: String(user.id) },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = generateToken(user.id);
 
     return res.status(200).json({
       message: 'Login realizado com sucesso!',
@@ -147,4 +173,7 @@ async function login(req, res) {
   }
 }
 
-module.exports = { register, login};
+module.exports = {
+  register,
+  login,
+};
