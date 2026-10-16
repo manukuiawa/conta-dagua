@@ -1,7 +1,16 @@
-
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Register.css";
+
+interface RegisterResponse {
+  message?: string;
+  token?: string;
+  user?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
 
 function Register() {
   const navigate = useNavigate();
@@ -16,10 +25,20 @@ function Register() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleRegister(
-    event: React.FormEvent<HTMLFormElement>
+    event: FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
     setError("");
+
+    if (isLoading) return;
+
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedName || !normalizedEmail) {
+      setError("Preencha seu nome e e-mail.");
+      return;
+    }
 
     if (password.length < 8) {
       setError("A senha deve ter pelo menos 8 caracteres.");
@@ -31,9 +50,9 @@ function Register() {
       return;
     }
 
-    try {
-      setIsLoading(true);
+    setIsLoading(true);
 
+    try {
       const response = await fetch(
         "http://localhost:3001/api/auth/register",
         {
@@ -42,14 +61,16 @@ function Register() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name: name.trim(),
-            email: email.trim().toLowerCase(),
+            name: normalizedName,
+            email: normalizedEmail,
             password,
           }),
         }
       );
 
-      const data = await response.json();
+      const data: RegisterResponse = await response
+        .json()
+        .catch(() => ({}));
 
       if (!response.ok) {
         setError(
@@ -58,7 +79,18 @@ function Register() {
         return;
       }
 
+      if (!data.token || !data.user) {
+        setError(
+          "A conta foi criada, mas não foi possível iniciar sua sessão. Tente entrar pelo login."
+        );
+        return;
+      }
+
+      // Substituir qualquer token anterior pelo da nova conta
+      sessionStorage.setItem("authToken", data.token);
+
       navigate("/questionario", {
+        replace: true,
         state: {
           name: data.user.name,
           email: data.user.email,
@@ -66,8 +98,9 @@ function Register() {
       });
     } catch (error) {
       console.error("Erro ao realizar cadastro:", error);
+
       setError(
-        "Não foi possível conectar ao servidor. Tente novamente."
+        "Não foi possível conectar ao servidor. Verifique se o backend está rodando."
       );
     } finally {
       setIsLoading(false);
@@ -87,9 +120,15 @@ function Register() {
           </p>
         </header>
 
-        <form className="register-form" onSubmit={handleRegister}>
+        <form
+          className="register-form"
+          onSubmit={handleRegister}
+        >
           <div className="register-form-group">
-            <label htmlFor="register-name">Nome completo</label>
+            <label htmlFor="register-name">
+              Nome completo
+            </label>
+
             <input
               id="register-name"
               type="text"
@@ -102,7 +141,10 @@ function Register() {
           </div>
 
           <div className="register-form-group">
-            <label htmlFor="register-email">E-mail</label>
+            <label htmlFor="register-email">
+              E-mail
+            </label>
+
             <input
               id="register-email"
               type="email"
@@ -115,7 +157,9 @@ function Register() {
           </div>
 
           <div className="register-form-group">
-            <label htmlFor="register-password">Senha</label>
+            <label htmlFor="register-password">
+              Senha
+            </label>
 
             <div className="register-password-wrapper">
               <input
@@ -124,7 +168,9 @@ function Register() {
                 placeholder="Mínimo de 8 caracteres"
                 autoComplete="new-password"
                 value={password}
-                onChange={(event) => setPassword(event.target.value)}
+                onChange={(event) =>
+                  setPassword(event.target.value)
+                }
                 minLength={8}
                 required
               />
@@ -132,8 +178,14 @@ function Register() {
               <button
                 type="button"
                 className="register-password-toggle"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                onClick={() =>
+                  setShowPassword((current) => !current)
+                }
+                aria-label={
+                  showPassword
+                    ? "Ocultar senha"
+                    : "Mostrar senha"
+                }
               >
                 {showPassword ? "Ocultar" : "Mostrar"}
               </button>
@@ -148,11 +200,15 @@ function Register() {
             <div className="register-password-wrapper">
               <input
                 id="register-confirm-password"
-                type={showConfirmPassword ? "text" : "password"}
+                type={
+                  showConfirmPassword ? "text" : "password"
+                }
                 placeholder="Digite a senha novamente"
                 autoComplete="new-password"
                 value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
+                onChange={(event) =>
+                  setConfirmPassword(event.target.value)
+                }
                 required
               />
 
@@ -160,7 +216,7 @@ function Register() {
                 type="button"
                 className="register-password-toggle"
                 onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
+                  setShowConfirmPassword((current) => !current)
                 }
                 aria-label={
                   showConfirmPassword
@@ -184,14 +240,19 @@ function Register() {
             className="register-submit"
             disabled={isLoading}
           >
-            {isLoading ? "Criando conta..." : "Criar minha conta"}
+            {isLoading
+              ? "Criando conta..."
+              : "Criar minha conta"}
           </button>
         </form>
 
         <footer className="register-footer">
           <p>Já possui uma conta?</p>
 
-          <Link to="/login" className="register-login-link">
+          <Link
+            to="/login"
+            className="register-login-link"
+          >
             Voltar para o login
           </Link>
         </footer>
